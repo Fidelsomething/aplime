@@ -18,15 +18,15 @@ module.exports.register = function(req, res){
 	}
 
 	var salt = crypto.randomBytes(16).toString('hex');
-	var hash = crypto.pbkdf2Sync(req.body.password, salt, 1000, 64).toString('hex'); 
+	var hash = crypto.pbkdf2Sync(req.body.password, salt, 1000, 64).toString('hex');
 
-	connection.query("SELECT * FROM users WHERE username = ?"),[req.body.username], function(err, rows){
+	connection.query("SELECT * FROM omeka_users WHERE username = ?"),[req.body.username], function(err, rows){
 		if(err){
 			sendJSONresponse(res, 400, err);
 		}
 		if(rows.length){
 			sendJSONresponse(res, 400, {
-				"message": "User already exists" 
+				"message": "User already exists"
 			});
 		}
 		const User = {
@@ -35,9 +35,8 @@ module.exports.register = function(req, res){
 			password : salt
 		};
 
-		const insertQuery = "INSERT INTO users (username, email, password) values (?,?,?)";
-		connection.query(insertQuery, [User.username, User.email, User.password], function(){
-			function(err, rows){
+		const insertQuery = "INSERT INTO omeka_users (username, email, password) values (?,?,?)";
+		connection.query(insertQuery, [User.username, User.email, User.password], function(err, rows){
 				if(err){
 					console.log(err);
 					sendJSONresponse(res, 400, err);
@@ -53,15 +52,14 @@ module.exports.register = function(req, res){
 					exp: parseInt(expiry.getTime() / 1000), // exp as Unix time in seconds
 				}, process.env.JWT_SECRET);
 				sendJSONresponse(res, 200, token);
-			};
-		}) 
-	} 
+			});
+		}
 };
 
 module.exports.login = function(req, res){
 	if(!req.body.username || !req.body.password){
 		sendJSONresponse(res, 400, {
-			"message" : "All fields required."
+			"message" : req.body
 		});
 		return;
 	}

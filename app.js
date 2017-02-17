@@ -12,7 +12,7 @@ var routesApi = require('./api/routes/index');
 var app = express();
 
 // view engine setup
-
+app.set('view engine', 'html');
 app.locals.pretty = true;
 
 // uncomment after placing your favicon in /public
@@ -56,6 +56,7 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
+
 
 
 module.exports = app;

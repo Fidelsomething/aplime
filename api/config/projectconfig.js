@@ -5,8 +5,8 @@ module.exports = {
 	db : {
 		host: "localhost",
 		user     : "root",
-  		password : '',
-  		database : 'fidel'
+  		password : 'patinho',
+  		database : 'mlime_db'
 	},
 
 }

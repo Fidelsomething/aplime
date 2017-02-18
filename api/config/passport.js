@@ -5,8 +5,8 @@ var crypto = require('crypto');
 
 var sha1 = function(data) {
      var generator = crypto.createHash('sha1');
-     generator.update( data )  
-     return generator.digest('hex') 
+     generator.update( data )
+     return generator.digest('hex')
 }
 
 
@@ -15,8 +15,8 @@ passport.use('local-login', new LocalStrategy({
 	password: 'password',
 	passReqToCallback: true
 }, function(req, username, password, done){
-	connection.query("SELECT * FROM fidel.users WHERE email = ?",
-		[email],
+	connection.query("SELECT * FROM omeka_users WHERE username = ?",
+		[username],
 		function(err, rows){
 			if(err){
 				return done(err);

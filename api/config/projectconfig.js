@@ -5,7 +5,7 @@ module.exports = {
 	db : {
 		host: "localhost",
 		user     : "root",
-  		password : 'Dam1bisc8my',
+  		password : '',
   		database : 'fidel'
 	},
 

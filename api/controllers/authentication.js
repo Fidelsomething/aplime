@@ -9,6 +9,11 @@ var sendJSONresponse = function(res, status, content){
 	res.status(status);
 	res.json(content);
 };
+var sha1 = function(data) {
+     var generator = crypto.createHash('sha1');
+     generator.update( data )  
+     return generator.digest('hex') 
+}
 
 module.exports.register = function(req, res){
 	console.log(req.body);
@@ -20,7 +25,9 @@ module.exports.register = function(req, res){
 
 	console.log("got here, as I have a decent bawdy");
 	var salt = crypto.randomBytes(16).toString('hex');
-	var hash = crypto.pbkdf2Sync(req.body.password, salt, 1000, 64).toString('hex');
+	var pass = salt + req.body.password;
+	//var hash = crypto.pbkdf2Sync(req.body.password, salt, 1000, 64).toString('hex');
+	var hash = sha1(pass);
 	console.log("hash: " + hash);
 	console.log("salt: " + salt);
 

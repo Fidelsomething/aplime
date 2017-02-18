@@ -3,6 +3,13 @@ var LocalStrategy = require('passport-local').Strategy;
 var connection = require('../models/db');
 var crypto = require('crypto');
 
+var sha1 = function(data) {
+     var generator = crypto.createHash('sha1');
+     generator.update( data )  
+     return generator.digest('hex') 
+}
+
+
 passport.use('local-login', new LocalStrategy({
 	username: 'username',
 	password: 'password',
@@ -19,7 +26,9 @@ passport.use('local-login', new LocalStrategy({
 					message: 'Incorrect username.'
 				})
 			}
-			if(crypto.pbkdf2Sync(password, rows[0].salt, 1000, 64).toString('hex') !== rows[0].password){
+			var pass = rows[0].salt + password;
+
+			if(sha1(pass) !== rows[0].password){
 				return done(null, false, {
 					message: 'Invalid password.'
 				});

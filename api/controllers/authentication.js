@@ -11,16 +11,22 @@ var sendJSONresponse = function(res, status, content){
 };
 
 module.exports.register = function(req, res){
-	if(!req.body.username || !req.body.name || !req.body.password){
+	console.log(req.body);
+	if(!req.body.username || !req.body.email || !req.body.password){
 		sendJSONresponse(res, 400, {
 			"message" : "All fields required."
 		})
 	}
 
+	console.log("got here, as I have a decent bawdy");
 	var salt = crypto.randomBytes(16).toString('hex');
 	var hash = crypto.pbkdf2Sync(req.body.password, salt, 1000, 64).toString('hex');
+	console.log("hash: " + hash);
+	console.log("salt: " + salt);
 
-	connection.query("SELECT * FROM omeka_users WHERE username = ?"),[req.body.username], function(err, rows){
+	connection.query("SELECT * FROM fidel.users WHERE username = ?" ,[req.body.username], function(err, rows){
+		console.log("inside query");
+		console.log(rows);
 		if(err){
 			sendJSONresponse(res, 400, err);
 		}
@@ -32,11 +38,12 @@ module.exports.register = function(req, res){
 		const User = {
 			username : req.body.username,
 			email : req.body.email,
-			password : salt
+			password : hash,
+			salt: salt
 		};
 
-		const insertQuery = "INSERT INTO omeka_users (username, email, password) values (?,?,?)";
-		connection.query(insertQuery, [User.username, User.email, User.password], function(err, rows){
+		const insertQuery = "INSERT INTO fidel.users (username, email, password, salt) values (?,?,?,?)";
+		connection.query(insertQuery, [User.username, User.email, User.password, User.salt], function(err, rows){
 				if(err){
 					console.log(err);
 					sendJSONresponse(res, 400, err);
@@ -53,7 +60,7 @@ module.exports.register = function(req, res){
 				}, process.env.JWT_SECRET);
 				sendJSONresponse(res, 200, token);
 			});
-		}
+		});
 };
 
 module.exports.login = function(req, res){

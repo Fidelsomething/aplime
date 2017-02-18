@@ -1,4 +1,4 @@
-const connection    = require('../models/db.js');
+const connection    = require('../models/db');
 const passport      = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
@@ -7,7 +7,7 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(id, done) {
-  connection.query("SELECT * FROM users WHERE id = ? ",
+  connection.query("SELECT * FROM fidel.users WHERE id = ? ",
     [id],
     function(err, rows) {
       done(err, rows[0]);

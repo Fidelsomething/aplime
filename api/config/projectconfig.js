@@ -1,12 +1,12 @@
 module.exports = {
 	server:{
-		port: "8085"
+		port: "3456"
 	},
 	db : {
 		host: "localhost",
-		user     : 'root',
-  		password : 'patinho',
-  		database : 'mlime_db'
+		user     : "root",
+  		password : 'Dam1bisc8my',
+  		database : 'fidel'
 	},
 
 }

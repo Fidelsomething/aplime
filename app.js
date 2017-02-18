@@ -12,7 +12,7 @@ var routesApi = require('./api/routes/index');
 var app = express();
 
 // view engine setup
-app.set('view engine', 'html');
+//app.set('view engine', 'html');
 app.locals.pretty = true;
 
 // uncomment after placing your favicon in /public
@@ -33,6 +33,12 @@ app.use(function(req, res, next) {
   next(err);
 });
 
+app.use(function(err, req, res, next){
+  if(err.name ==='UnauthorizedError'){
+    err.status = 401;
+    res.json({"message" : err.name + ": " + err.message});
+  }
+});
 // error handlers
 
 // development error handler

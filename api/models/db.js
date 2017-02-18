@@ -1,11 +1,17 @@
 var pcfg = require('../config/projectconfig');
 const mysql = require('mysql');
 
-const pool = mysql.createPool({
-  host     : pcfg.host,
-  user     : pcfg.user,
-  password : pcfg.password,
-  database : pcfg.database
+const connection = mysql.createConnection({
+  host     : pcfg.db.host,
+  user     : pcfg.db.user,
+  password : pcfg.db.password,
+  database : pcfg.db.database
 });
 
-module.exports = pool;
+console.log(pcfg.db.host);
+console.log(pcfg.db.user);
+console.log(pcfg.db.password);
+console.log(pcfg.db.database);
+connection.connect();
+
+module.exports = connection;

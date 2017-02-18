@@ -1,6 +1,6 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var connection = require('../models/db.js');
+var connection = require('../models/db');
 var crypto = require('crypto');
 
 passport.use('local-login', new LocalStrategy({
@@ -8,7 +8,7 @@ passport.use('local-login', new LocalStrategy({
 	password: 'password',
 	passReqToCallback: true
 }, function(req, username, password, done){
-	connection.query("SELECT * FROM users WHERE email = ?",
+	connection.query("SELECT * FROM fidel.users WHERE email = ?",
 		[email],
 		function(err, rows){
 			if(err){

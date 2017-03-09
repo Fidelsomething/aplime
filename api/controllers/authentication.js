@@ -36,38 +36,39 @@ module.exports.register = function(req, res){
 		console.log(rows);
 		if(err){
 			sendJSONresponse(res, 400, err);
-		}
-		if(rows.length){
+		} else if(rows.length){
 			sendJSONresponse(res, 400, {
 				"message": "User already exists"
 			});
-		}
-		const User = {
-			username : req.body.username,
-			email : req.body.email,
-			password : hash,
-			salt: salt
-		};
+		} else {
+			const User = {
+				username : req.body.username,
+				email : req.body.email,
+				password : hash,
+				salt: salt
+			};
 
-		const insertQuery = "INSERT INTO omeka_users (username, email, password, salt, name, active, role) values (?,?,?,?,?,?,?)";
-		connection.query(insertQuery, [User.username, User.email, User.password, User.salt, 'Guest User', '1', 'guest'], function(err, rows){
+			const insertQuery = "INSERT INTO omeka_users (username, email, password, salt, name, active, role) values (?,?,?,?,?,?,?)";
+			connection.query(insertQuery, [User.username, User.email, User.password, User.salt, 'Guest User', '1', 'guest'], function(err, rows){
 				if(err){
 					console.log(err);
 					sendJSONresponse(res, 400, err);
-				}
-				User.id = rows.insertId;
-				var expiry = new Date();
-				expiry.setDate(expiry.getDate() + 7); // 7 days
+				} else {
+					User.id = rows.insertId;
+					var expiry = new Date();
+					expiry.setDate(expiry.getDate() + 7); // 7 days
 
-				var token = jwt.sign({
-					id: User.id,
-					email: User.email,
-					username: User.username,
-					exp: parseInt(expiry.getTime() / 1000), // exp as Unix time in seconds
-				}, process.env.JWT_SECRET);
-				sendJSONresponse(res, 200, token);
+					var token = jwt.sign({
+						id: User.id,
+						email: User.email,
+						username: User.username,
+						exp: parseInt(expiry.getTime() / 1000), // exp as Unix time in seconds
+					}, process.env.JWT_SECRET);
+					sendJSONresponse(res, 200, token);
+				}
 			});
-		});
+		}
+	});
 };
 
 

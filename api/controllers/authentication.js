@@ -19,7 +19,7 @@ module.exports.register = function(req, res){
 	console.log(req.body);
 	if(!req.body.username || !req.body.email || !req.body.password){
 		sendJSONresponse(res, 400, {
-			"message" : "All fields required. Received " + req.body
+			"message" : "All fields required."
 		})
 	}
 
@@ -36,12 +36,10 @@ module.exports.register = function(req, res){
 		console.log(rows);
 		if(err){
 			sendJSONresponse(res, 400, err);
-			return;
 		} else if(rows.length){
 			sendJSONresponse(res, 400, {
-				"message": "User already exists. " + rows.length
+				"message": "User already exists"
 			});
-			return;
 		} else {
 			const User = {
 				username : req.body.username,
@@ -53,7 +51,7 @@ module.exports.register = function(req, res){
 			const insertQuery = "INSERT INTO omeka_users (username, email, password, salt, name, active, role) values (?,?,?,?,?,?,?)";
 			connection.query(insertQuery, [User.username, User.email, User.password, User.salt, 'Guest User', '1', 'guest'], function(err, rows){
 				if(err){
-					console.log(err + "56");
+					console.log(err);
 					sendJSONresponse(res, 400, err);
 				} else {
 					User.id = rows.insertId;
@@ -66,8 +64,8 @@ module.exports.register = function(req, res){
 						username: User.username,
 						exp: parseInt(expiry.getTime() / 1000), // exp as Unix time in seconds
 					}, process.env.JWT_SECRET);
+					console.log(token);
 					sendJSONresponse(res, 200, token);
-					return;
 				}
 			});
 		}
@@ -79,7 +77,7 @@ module.exports.login = function(req, res){
 	console.log(req.body);
 	if(!req.body.username || !req.body.password){
 		sendJSONresponse(res, 400, {
-			"message" : "Missing required fields. Received only " + req.body
+			"message" : req.body
 		});
 		return;
 	}
@@ -87,13 +85,11 @@ module.exports.login = function(req, res){
 	connection.query("SELECT * FROM omeka_users WHERE username = ?", [req.body.username], function(err, rows){
 		if(err){
 			sendJSONresponse(res, 400, err);
-			return;
 		}
 		if(!rows.length){
 			sendJSONresponse(res, 400, {
-				"message": "No user with that name found. Received " + rows.length
+				"message": "No user with that name found"
 			});
-			return;
 		}
 		var pass = rows[0].salt + req.body.password;
 		console.log("result salt: ");
@@ -105,7 +101,6 @@ module.exports.login = function(req, res){
 			sendJSONresponse(res, 400, {
 				"message" : "Invalid password"
 			});
-			return;
 		} else {
 			var User = rows[0];
 			var expiry = new Date();
@@ -116,7 +111,6 @@ module.exports.login = function(req, res){
 				exp: parseInt(expiry.getTime()/1000),
 			}, process.env.JWT_SECRET);
 			sendJSONresponse(res, 200, token);
-			return;
 		}
 
 	})
